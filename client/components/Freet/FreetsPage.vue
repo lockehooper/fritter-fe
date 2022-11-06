@@ -28,13 +28,13 @@
 						<!-- <span v-if="$store.state.filter"> by @{{ $store.state.filter }} </span> -->
 					</h2>
 				</div>
-				<!-- <div class="right">
+				<div class="right">
 					<GetFreetsForm
 						ref="getFreetsForm"
 						value="author"
 						placeholder="🔍 Filter by author (optional)"
 						button="🔄 Get freets" />
-				</div> -->
+				</div>
 			</header>
 			<section>
 				<div class="timelineType">
@@ -57,17 +57,40 @@ import FreetComponent from "@/components/Freet/FreetComponent.vue";
 import CreateFreetForm from "@/components/Freet/CreateFreetForm.vue";
 import FollowUserForm from "@/components/Account/FollowUserForm.vue";
 import GetFreetsForm from "@/components/Freet/GetFreetsForm.vue";
+import GetTimelineFreetsForm from "@/components/Timeline/GetTimelineForm.vue";
 
 export default {
 	name: "FreetPage",
-	components: { FreetComponent, GetFreetsForm, CreateFreetForm, FollowUserForm },
+	components: { FreetComponent, GetTimelineFreetsForm, GetFreetsForm, CreateFreetForm, FollowUserForm },
 	mounted() {
-		this.$refs.getFreetsForm.submit();
+		this.$refs.GetFreetsForm.submit();
 	},
 	methods: {
-		setTimeline: function (event) {
+		setTimeline: async function (event) {
+			const options = {
+				method: this.method,
+				headers: { "Content-Type": "application/json" },
+				credentials: "same-origin", // Sends express-session credentials with request,
+				body: JSON.stringify({ type: this.value }),
+			};
 			const targetId = event.currentTarget.id;
-			this.timelineType = targetId;
+			this.$store.commit("updateTimelineFilter", targetId.toUpperCase());
+			const url = `/api/timeline?type=${targetId.toUpperCase()}`;
+			try {
+				const r = await fetch(url);
+				const res = await r.json();
+				if (!r.ok) {
+					throw new Error(res.error);
+				}
+
+				this.$store.commit("updateFreets", res.freets);
+			} catch (e) {
+				this.$store.commit("updateTimelineFilter", "FEATURED");
+				this.$store.commit("refreshTimelineFreets");
+
+				this.$set(this.alerts, e, "error");
+				setTimeout(() => this.$delete(this.alerts, e), 3000);
+			}
 		},
 	},
 };

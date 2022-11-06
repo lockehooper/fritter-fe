@@ -66,7 +66,7 @@ const store = new Vuex.Store({
 		},
 		async refreshTimelineFreets(state) {
 			/**
-			 * Request the server for the currently available freets.
+			 * Request the server for the current timeline freets.
 			 */
 			const url = "/api/timeline";
 			const res = await fetch(url, {

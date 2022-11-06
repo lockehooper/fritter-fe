@@ -4,7 +4,7 @@
 import InlineForm from "@/components/common/InlineForm.vue";
 
 export default {
-	name: "GetFreetsForm",
+	name: "GetTimelineFreetsForm",
 	mixins: [InlineForm],
 	data() {
 		return { value: this.$store.state.filter };
@@ -22,7 +22,7 @@ export default {
 				}
 
 				this.$store.commit("updateTimelineFilter", this.value);
-				this.$store.commit("updateeFreets", res);
+				this.$store.commit("updateFreets", res);
 			} catch (e) {
 				this.$store.commit("updateTimelineFilter", "FEATURED");
 				this.$store.commit("refreshTimelineFreets");

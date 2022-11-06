@@ -22,7 +22,7 @@ const router = express.Router();
  */
 
 router.get("/", [userValidator.isUserLoggedIn], async (req: Request, res: Response, next: NextFunction) => {
-	const type = req.body.type as TimelineTypes;
+	const type = req.query.type as TimelineTypes;
 	const updatedTimeline = await TimelineCollection.createOrUpdate(req.session.userId, type);
 	const response = util.constructFreetResponse(updatedTimeline);
 	res.status(200).json(response);

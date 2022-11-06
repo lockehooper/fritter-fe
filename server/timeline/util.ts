@@ -44,14 +44,14 @@ const constructFreetResponse = (timeline: HydratedDocument<Timeline>): TimelineR
 const getFreetIds = async (type: TimelineTypes, userId: Types.ObjectId | string): Promise<[Types.ObjectId]> => {
 	const timelineUser = await UserCollection.findOneByUserId(userId);
 	if (type === "FOLLOWING") {
-		let freetIdArray: [Types.ObjectId];
+		let freetIdArray: Types.ObjectId[] = [];
 		await Promise.all(
 			timelineUser.following.map(async (u) => {
 				const userFreets = await FreetCollection.findAllByUsername(u);
 				userFreets.forEach((f) => freetIdArray.push(f._id));
 			})
 		);
-		return freetIdArray;
+		return freetIdArray as [Types.ObjectId];
 	} else {
 		return (await FreetCollection.findAll()).slice(0, 100).map((f) => f._id) as [Types.ObjectId];
 	}

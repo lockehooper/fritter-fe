@@ -1,5 +1,5 @@
 import FreetCollection from "../freet/collection";
-import { Freet } from "freet/model";
+import { Freet } from "../freet/model";
 import moment from "moment";
 import { HydratedDocument, Types } from "mongoose";
 import UserCollection from "../user/collection";

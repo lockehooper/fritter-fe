@@ -162,8 +162,8 @@ router.delete("/", [userValidator.isUserLoggedIn], async (req: Request, res: Res
  * @throws {409} - If username already taken
  * @throws {400} - If username or password are not of the correct format
  */
-router.put(
-	"/",
+router.post(
+	"/follow",
 	[
 		userValidator.isUserLoggedIn,
 		userValidator.isValidUsername,
@@ -189,7 +189,7 @@ router.put(
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in
  */
-router.delete("/", [userValidator.isUserLoggedIn], async (req: Request, res: Response) => {
+router.delete("/follow", [userValidator.isUserLoggedIn], async (req: Request, res: Response) => {
 	const userId = (req.session.userId as string) ?? ""; // Will not be an empty string since its validated in isUserLoggedIn
 	await UserCollection.deleteOne(userId);
 	await FreetCollection.deleteMany(userId);

@@ -1,21 +1,21 @@
-<!-- Form for changing username (block style) -->
+<!-- Form for creating freets (block style) -->
 
 <script>
 import BlockForm from "@/components/common/BlockForm.vue";
 
 export default {
-	name: "ChangeUsernameForm",
+	name: "FollowUserForm",
 	mixins: [BlockForm],
 	data() {
 		return {
-			url: "/api/users",
-			method: "PATCH",
+			url: "/api/users/follow",
+			method: "POST",
 			hasBody: true,
+			fields: [{ id: "followUser", label: "User to Follow", value: "" }],
+			title: "Follow a user",
 			setUser: true,
-			fields: [{ id: "username", label: "Username", value: "" }],
-			title: "Change username",
 			callback: () => {
-				const message = "Successfully changed username!";
+				const message = "Successfully follower a user!";
 				this.$set(this.alerts, message, "success");
 				setTimeout(() => this.$delete(this.alerts, message), 3000);
 			},

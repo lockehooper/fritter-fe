@@ -11,6 +11,7 @@ const store = new Vuex.Store({
 	state: {
 		filter: null, // Username to filter shown freets by (null = show all)
 		freets: [], // All freets created in the app
+		events: [], // All events
 		username: null, // Username of the logged in user
 		following: [], //All usernames of those a user follows
 		userClassification: "None", // Classification of the current user
@@ -56,6 +57,13 @@ const store = new Vuex.Store({
 			 */
 			state.freets = freets;
 		},
+		updateEvents(state, events) {
+			/**
+			 * Update the stored events to the provided events.
+			 * @param events - Events to store
+			 */
+			state.events = events;
+		},
 		async refreshFreets(state) {
 			/**
 			 * Request the server for the currently available freets.
@@ -63,6 +71,14 @@ const store = new Vuex.Store({
 			const url = this.filter ? `/api/freets?author=${this.filter}` : "/api/freets";
 			const res = await fetch(url).then(async (r) => r.json());
 			state.freets = res;
+		},
+		async refreshEvents(state) {
+			/**
+			 * Request the server for the currently available freets.
+			 */
+			const url = "/api/events";
+			const res = await fetch(url).then(async (r) => r.json());
+			state.events = res;
 		},
 		async refreshTimelineFreets(state) {
 			/**

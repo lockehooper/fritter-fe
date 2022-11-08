@@ -4,11 +4,12 @@ import moment from "moment";
 import { HydratedDocument, Types } from "mongoose";
 import UserCollection from "../user/collection";
 import { PopulatedTimeline, Timeline, TimelineTypes } from "./model";
+import { FreetResponse } from "server/freet/util";
 
 // Update this if you add a property to the Freet type!
 type TimelineResponse = {
 	_id: string;
-	freets: Freet[];
+	freets: FreetResponse[];
 	dateAccessed: string;
 };
 
@@ -34,9 +35,20 @@ const constructFreetResponse = (timeline: HydratedDocument<Timeline>): TimelineR
 		}),
 	};
 
+	const formatFreets: FreetResponse[] = timelineCopy.freets.map((f) => {
+		const { username } = f.authorId;
+		return {
+			_id: f._id.toString(),
+			content: f.content,
+			author: username,
+			dateCreated: formatDate(f.dateCreated),
+			dateModified: formatDate(f.dateModified),
+		};
+	});
+
 	return {
 		_id: timelineCopy._id.toString(),
-		freets: timelineCopy.freets,
+		freets: formatFreets,
 		dateAccessed: formatDate(timeline.dateAccessed),
 	};
 };

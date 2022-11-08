@@ -4,6 +4,7 @@ import EventCollection from "./collection";
 import * as userValidator from "../user/middleware";
 import * as eventValidator from "../event/middleware";
 import * as util from "./util";
+import { EventResponse } from "./util";
 
 const router = express.Router();
 
@@ -121,19 +122,12 @@ router.delete(
  */
 router.put(
 	"/:eventId?",
-	[
-		userValidator.isUserLoggedIn,
-		eventValidator.isEventExists,
-		eventValidator.isValidEventModifier,
-		eventValidator.isValidEventContent,
-	],
+	[userValidator.isUserLoggedIn, eventValidator.isEventExists, eventValidator.isValidEventModifier],
 	async (req: Request, res: Response) => {
 		const params = {
 			name: req.body.name,
 			description: req.body.description,
-			start: parseInt(req.body.start),
-			end: parseInt(req.body.end),
-			freeters: req.body.freeters as string[],
+			freeters: req.body.freeters.split(","),
 		};
 		const event = await EventCollection.updateOne(req.params.eventId, params);
 		res.status(200).json({

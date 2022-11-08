@@ -4,29 +4,20 @@
 import InlineForm from "@/components/common/InlineForm.vue";
 
 export default {
-	name: "GetTimelineFreetsForm",
+	name: "GetEventsForm",
 	mixins: [InlineForm],
-	data() {
-		return { value: this.$store.state.filter };
-	},
 	methods: {
 		async submit() {
-			const url = `/api/timeline`;
+			const url = "/api/events";
 			try {
-				const r = await fetch(url, {
-					body: JSON.stringify({ type: this.value }),
-				});
+				const r = await fetch(url);
 				const res = await r.json();
 				if (!r.ok) {
 					throw new Error(res.error);
 				}
-
-				this.$store.commit("updateTimelineFilter", this.value);
-				this.$store.commit("updateFreets", res.freets);
+				console.log(res);
+				this.$store.commit("updateEvents", res);
 			} catch (e) {
-				this.$store.commit("updateTimelineFilter", "FEATURED");
-				this.$store.commit("refreshTimelineFreets");
-
 				this.$set(this.alerts, e, "error");
 				setTimeout(() => this.$delete(this.alerts, e), 3000);
 			}

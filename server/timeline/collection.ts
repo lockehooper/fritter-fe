@@ -24,7 +24,7 @@ class TimelineCollection {
 			dateAccessed: date,
 		});
 		await timeline.save(); // Saves to MongoDB
-		return (await timeline.populate("userId")).populate("freets");
+		return (await (await timeline.populate("userId")).populate("freets")).populate("freets.authorId");
 	}
 
 	/**
@@ -49,7 +49,7 @@ class TimelineCollection {
 		timeline.freets = await getFreetIds(type, timeline.userId);
 		timeline.dateAccessed = new Date();
 		await timeline.save();
-		return (await timeline.populate("userId")).populate("freets");
+		return (await (await timeline.populate("userId")).populate("freets")).populate("freets.authorId");
 	}
 
 	/**
@@ -65,9 +65,9 @@ class TimelineCollection {
 	): Promise<HydratedDocument<Timeline>> {
 		const exisitingTimeline = await this.findOne(userId, type);
 		if (exisitingTimeline === null) {
-			return this.addOne(userId, type);
+			return await this.addOne(userId, type);
 		} else {
-			return this.updateOne(userId, type);
+			return await this.updateOne(userId, type);
 		}
 	}
 

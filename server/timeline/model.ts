@@ -1,4 +1,4 @@
-import { Freet } from "../freet/model";
+import { Freet, PopulatedFreet } from "../freet/model";
 import type { Types, PopulatedDoc, Document } from "mongoose";
 import { Schema, model } from "mongoose";
 import type { User } from "../user/model";
@@ -22,7 +22,7 @@ export type Timeline = {
 export type PopulatedTimeline = {
 	_id: Types.ObjectId; // MongoDB assigns each object this ID on creation
 	userId: User;
-	freets: [Freet];
+	freets: [PopulatedFreet];
 	type: string;
 	dateAccessed: Date;
 };

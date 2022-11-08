@@ -1,39 +1,54 @@
-<!-- Reusable component representing a single freet and its actions -->
+<!-- Reusable component representing a single event and its actions -->
 <!-- We've tagged some elements with classes; consider writing CSS using those classes to style them... -->
 
 <template>
-	<article class="freet">
+	<article class="event">
 		<header>
-			<h3 class="author">@{{ freet.author }}</h3>
+			<input v-if="editing" class="name" :value="draftName" @input="draftName = $event.target.value" />
+			<h3 v-else class="name">{{ event.name }}</h3>
 		</header>
-		<textarea v-if="editing" class="content" :value="draft" @input="draft = $event.target.value" />
-		<p v-else class="content">
-			{{ freet.content }}
+		<h5 class="">Event owner: @{{ event.owner }}</h5>
+		<h5 class="">Event time: {{ event.start }} to {{ event.end }}</h5>
+		<p v-if="editing">Event Description:</p>
+		<textarea v-if="editing" class="description" :value="draftDesc" @input="draftDesc = $event.target.value" />
+		<p v-else class="description">
+			{{ event.description }}
 		</p>
-		<p class="info">
-			Posted at {{ freet.dateModified }}
-			<i v-if="freet.edited">(edited)</i>
-		</p>
-		<div v-if="$store.state.username === freet.author" class="actions">
+		<p v-if="editing">Event Freeters:</p>
+		<input v-if="editing" class="freeters" :value="draftFreeters" @input="draftFreeters = $event.target.value" />
+		<p v-else class="freeters">Featured Freeters: {{ event.freeters.reduce((a, b) => a + ", " + b, "") }}</p>
+		<p class="info">Posted at {{ event.dateModified }}</p>
+		<div v-if="$store.state.username === event.owner" class="actions">
 			<button v-if="editing" @click="submitEdit">✅ Save changes</button>
 			<button v-if="editing" @click="stopEditing">🚫 Discard changes</button>
 			<button v-if="!editing" @click="startEditing">✏️ Edit</button>
-			<button @click="deleteFreet">🗑️ Delete</button>
+			<button @click="deleteEvent">🗑️ Delete</button>
 		</div>
 		<section class="alerts">
 			<article v-for="(status, alert, index) in alerts" :key="index" :class="status">
 				<p>{{ alert }}</p>
 			</article>
 		</section>
+		<section v-if="$store.state.freets.length">
+			<FreetComponent v-for="freet in event.freets" :key="freet.id" :freet="freet" />
+		</section>
+		<article v-else>
+			<h3>No freets for event.</h3>
+		</article>
 	</article>
 </template>
 
 <script>
+import FreetComponent from "@/components/Freet/FreetComponent.vue";
+
 export default {
-	name: "FreetComponent",
+	name: "EventComponent",
+	components: {
+		FreetComponent,
+	},
 	props: {
 		// Data from the stored freet
-		freet: {
+		event: {
 			type: Object,
 			required: true,
 		},
@@ -41,7 +56,9 @@ export default {
 	data() {
 		return {
 			editing: false, // Whether or not this freet is in edit mode
-			draft: this.freet.content, // Potentially-new content for this freet
+			draftName: this.event.name, // Potentially-new content for this freet
+			draftDesc: this.event.description,
+			draftFreeters: this.event.freeters,
 			alerts: {}, // Displays success/error messages encountered during freet modification
 		};
 	},
@@ -51,16 +68,20 @@ export default {
 			 * Enables edit mode on this freet.
 			 */
 			this.editing = true; // Keeps track of if a freet is being edited
-			this.draft = this.freet.content; // The content of our current "draft" while being edited
+			this.draftName = this.event.name; // The content of our current "draft" while being edited
+			this.draftDesc = this.event.description;
+			this.draftFreeters = this.event.freeters;
 		},
 		stopEditing() {
 			/**
 			 * Disables edit mode on this freet.
 			 */
 			this.editing = false;
-			this.draft = this.freet.content;
+			this.draftName = this.event.name; // The content of our current "draft" while being edited
+			this.draftDesc = this.event.description;
+			this.draftFreeters = this.event.freeters;
 		},
-		deleteFreet() {
+		deleteEvent() {
 			/**
 			 * Deletes this freet.
 			 */
@@ -68,7 +89,7 @@ export default {
 				method: "DELETE",
 				callback: () => {
 					this.$store.commit("alert", {
-						message: "Successfully deleted freet!",
+						message: "Successfully deleted event!",
 						status: "success",
 					});
 				},
@@ -79,17 +100,14 @@ export default {
 			/**
 			 * Updates freet to have the submitted draft content.
 			 */
-			if (this.freet.content === this.draft) {
-				const error = "Error: Edited freet content should be different than current freet content.";
-				this.$set(this.alerts, error, "error"); // Set an alert to be the error text, timeout of 3000 ms
-				setTimeout(() => this.$delete(this.alerts, error), 3000);
-				return;
-			}
-
 			const params = {
-				method: "PATCH",
+				method: "PUT",
 				message: "Successfully edited freet!",
-				body: JSON.stringify({ content: this.draft }),
+				body: JSON.stringify({
+					name: this.draftName,
+					description: this.draftDesc,
+					freeters: this.draftFreeters.reduce((a, b) => a + ", " + b, ""),
+				}),
 				callback: () => {
 					this.$set(this.alerts, params.message, "success");
 					setTimeout(() => this.$delete(this.alerts, params.message), 3000);
@@ -113,14 +131,15 @@ export default {
 			}
 
 			try {
-				const r = await fetch(`/api/freets/${this.freet._id}`, options);
+				const r = await fetch(`/api/events/${this.event._id}`, options);
 				if (!r.ok) {
 					const res = await r.json();
 					throw new Error(res.error);
 				}
+				console.log(r);
 
 				this.editing = false;
-				this.$store.commit("refreshFreets");
+				this.$store.commit("refreshEvents");
 
 				params.callback();
 			} catch (e) {

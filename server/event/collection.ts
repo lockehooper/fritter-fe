@@ -30,7 +30,7 @@ class EventCollection {
 	static async addOne(ownerId: Types.ObjectId | string, params: EventParams): Promise<HydratedDocument<Event>> {
 		const date = new Date();
 		const freeters = params.freeters.length
-			? await Promise.all(params.freeters.map(async (u) => await UserCollection.findOneByUserId(u)))
+			? await Promise.all(params.freeters.map(async (u) => await UserCollection.findOneByUsername(u)))
 			: [];
 		const event = new EventModel({
 			ownerId,
@@ -108,10 +108,8 @@ class EventCollection {
 		}
 
 		if (freeters) {
-			const newFreeters = await Promise.all(
-				params.freeters.map(async (u) => await UserCollection.findOneByUserId(u))
-			);
-			event.freeters = newFreeters.map((f) => f._id) as [Types.ObjectId];
+			const newFreeters = await Promise.all(freeters.map(async (u) => await UserCollection.findOneByUsername(u)));
+			event.freeters = newFreeters.filter((f) => f !== null).map((f) => f._id) as [Types.ObjectId];
 		}
 
 		event.dateModified = new Date();

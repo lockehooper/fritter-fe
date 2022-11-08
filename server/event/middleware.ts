@@ -65,12 +65,12 @@ const isValidEventContent = async (req: Request, res: Response, next: NextFuncti
  * Checks if a event with eventId is req.params exists
  */
 const isEventExists = async (req: Request, res: Response, next: NextFunction) => {
-	const validFormat = Types.ObjectId.isValid(req.params.freetId);
-	const freet = validFormat ? await EventCollection.findOne(req.params.freetId) : "";
+	const validFormat = Types.ObjectId.isValid(req.params.eventId);
+	const freet = validFormat ? await EventCollection.findOne(req.params.eventId) : "";
 	if (!freet) {
 		res.status(404).json({
 			error: {
-				freetNotFound: `Freet with freet ID ${req.params.freetId} does not exist.`,
+				freetNotFound: `Freet with freet ID ${req.params.eventId} does not exist.`,
 			},
 		});
 		return;

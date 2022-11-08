@@ -6,8 +6,19 @@
 			<header>
 				<h2>Welcome @{{ $store.state.username }}</h2>
 			</header>
-			<CreateFreetForm />
-			<FollowUserForm />
+			<div class="formsContainer">
+				<div class="formButton" @click="toggleShowCreateFreet">Create Freet</div>
+				<div
+					class="formButton"
+					@click="toggleShowCreateEvent"
+					v-if="$store.state.userClassification === 'VERIFIED'">
+					Create Event
+				</div>
+				<div class="formButton" @click="toggleShowFollowUser">Follow a User</div>
+			</div>
+			<CreateFreetForm v-if="showCreateFreet" />
+			<FollowUserForm v-if="showFollowUser" />
+			<CreateEventForm v-if="showCreateEvent" />
 		</section>
 		<section v-else>
 			<header>
@@ -24,7 +35,7 @@
 			<header>
 				<div class="left">
 					<h2>
-						Viewing {{ $store.state.filter }} timeline
+						Viewing {{ $store.state.timelineType.toLowerCase() }} timeline
 						<!-- <span v-if="$store.state.filter"> by @{{ $store.state.filter }} </span> -->
 					</h2>
 				</div>
@@ -56,14 +67,29 @@
 import FreetComponent from "@/components/Freet/FreetComponent.vue";
 import CreateFreetForm from "@/components/Freet/CreateFreetForm.vue";
 import FollowUserForm from "@/components/Account/FollowUserForm.vue";
+import CreateEventForm from "@/components/Event/CreateEventForm.vue";
 import GetFreetsForm from "@/components/Freet/GetFreetsForm.vue";
 import GetTimelineFreetsForm from "@/components/Timeline/GetTimelineForm.vue";
 
 export default {
 	name: "FreetPage",
-	components: { FreetComponent, GetTimelineFreetsForm, GetFreetsForm, CreateFreetForm, FollowUserForm },
+	components: {
+		FreetComponent,
+		GetTimelineFreetsForm,
+		GetFreetsForm,
+		CreateFreetForm,
+		FollowUserForm,
+		CreateEventForm,
+	},
 	mounted() {
-		this.$refs.GetFreetsForm.submit();
+		//this.$refs.GetFreetsForm.submit();
+	},
+	data() {
+		return {
+			showCreateFreet: false,
+			showCreateEvent: false,
+			showFollowUser: false,
+		};
 	},
 	methods: {
 		setTimeline: async function (event) {
@@ -82,6 +108,7 @@ export default {
 				if (!r.ok) {
 					throw new Error(res.error);
 				}
+				console.log(res);
 
 				this.$store.commit("updateFreets", res.freets);
 			} catch (e) {
@@ -91,6 +118,21 @@ export default {
 				this.$set(this.alerts, e, "error");
 				setTimeout(() => this.$delete(this.alerts, e), 3000);
 			}
+		},
+		toggleShowCreateFreet() {
+			this.showCreateFreet = !this.showCreateFreet;
+			this.showCreateEvent = false;
+			this.showFollowUser = false;
+		},
+		toggleShowCreateEvent() {
+			this.showCreateEvent = !this.showCreateEvent;
+			this.showCreateFreet = false;
+			this.showFollowUser = false;
+		},
+		toggleShowFollowUser() {
+			this.showFollowUser = !this.showFollowUser;
+			this.showCreateEvent = false;
+			this.showCreateFreet = false;
 		},
 	},
 };
@@ -117,6 +159,23 @@ section .scrollbox {
 	flex: 1 0 50vh;
 	padding: 3%;
 	overflow-y: scroll;
+}
+
+.formsContainer {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	padding-bottom: 10px;
+}
+
+.formButton {
+	padding: 10px 40px;
+	border-radius: 15px;
+	background-color: cornflowerblue;
+}
+
+.formButton:hover {
+	cursor: pointer;
 }
 
 .timelineType {

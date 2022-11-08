@@ -10,8 +10,8 @@ export type EventResponse = {
 	owner: string;
 	name: string;
 	description: string;
-	start: number;
-	end: number;
+	start: string;
+	end: string;
 	freeters: string[];
 	freets: FreetResponse[];
 	dateModified: string;
@@ -53,12 +53,12 @@ const constructEventResponse = async (event: HydratedDocument<Event>): Promise<E
 
 	return {
 		_id: event._id.toString(),
-		owner: event.ownerId.toString(),
-		freeters: event.freeters.map((f) => f.toString()),
+		owner: eventCopy.ownerId.username,
+		freeters: eventCopy.freeters.map((f) => f.username),
 		name: event.name,
 		description: event.description,
-		start: event.start,
-		end: event.end,
+		start: formatDate(new Date(event.start)),
+		end: formatDate(new Date(event.end)),
 		freets: eventFreets.flat(),
 		dateModified: formatDate(event.dateModified),
 	};

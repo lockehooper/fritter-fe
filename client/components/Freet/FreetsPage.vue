@@ -49,8 +49,20 @@
 			</header>
 			<section>
 				<div class="timelineType">
-					<div id="Featured" @click="setTimeline">Featured</div>
-					<div id="Following" @click="setTimeline">Following</div>
+					<div
+						id="Featured"
+						class="timelineOption"
+						:style="{ 'border-bottom': $store.state.timelineType === 'FEATURED' ? '2px solid' : 'none' }"
+						@click="setTimeline">
+						Featured
+					</div>
+					<div
+						id="Following"
+						class="timelineOption"
+						:style="{ 'border-bottom': $store.state.timelineType === 'FOLLOWING' ? '2px solid' : 'none' }"
+						@click="setTimeline">
+						Following
+					</div>
 				</div>
 			</section>
 			<section v-if="$store.state.freets.length">
@@ -108,8 +120,6 @@ export default {
 				if (!r.ok) {
 					throw new Error(res.error);
 				}
-				console.log(res);
-
 				this.$store.commit("updateFreets", res.freets);
 			} catch (e) {
 				this.$store.commit("updateTimelineFilter", "FEATURED");
@@ -155,10 +165,25 @@ button {
 	margin-right: 10px;
 }
 
+.left {
+	padding-top: 60px;
+}
+
 section .scrollbox {
 	flex: 1 0 50vh;
 	padding: 3%;
 	overflow-y: scroll;
+}
+
+.timelineOption {
+	flex: 1;
+	text-align: center;
+	padding: 5px 0px;
+	border-color: cornflowerblue;
+}
+
+.timelineOption:hover {
+	cursor: pointer;
 }
 
 .formsContainer {
@@ -169,9 +194,16 @@ section .scrollbox {
 }
 
 .formButton {
-	padding: 10px 40px;
+	padding: 20px 40px;
 	border-radius: 15px;
 	background-color: cornflowerblue;
+	flex: 1;
+	text-align: center;
+	margin-right: 20px;
+}
+
+.formButton:last-child {
+	margin-right: 0px;
 }
 
 .formButton:hover {

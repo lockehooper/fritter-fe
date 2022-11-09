@@ -4,25 +4,23 @@
 <template>
 	<article class="event">
 		<header>
-			<input v-if="editing" class="name" :value="draftName" @input="draftName = $event.target.value" />
-			<h3 v-else class="name">{{ event.name }}</h3>
+			<input v-if="editing" class="editArea" :value="draftName" @input="draftName = $event.target.value" />
+			<h2 class="topItem" v-else>{{ event.name }}</h2>
 		</header>
-		<h5 class="">Event owner: @{{ event.owner }}</h5>
-		<h5 class="">Event time: {{ event.start }} to {{ event.end }}</h5>
-		<p v-if="editing">Event Description:</p>
-		<textarea v-if="editing" class="description" :value="draftDesc" @input="draftDesc = $event.target.value" />
-		<p v-else class="description">
+		<h5 class="item">By @{{ event.owner }} | {{ event.start }} to {{ event.end }}</h5>
+		<h4 class="desc" v-if="editing">Event Description:</h4>
+		<textarea v-if="editing" class="editArea" :value="draftDesc" @input="draftDesc = $event.target.value" />
+		<h3 v-else class="desc">
 			{{ event.description }}
-		</p>
-		<p v-if="editing">Event Freeters:</p>
-		<input v-if="editing" class="freeters" :value="draftFreeters" @input="draftFreeters = $event.target.value" />
-		<p v-else class="freeters">Featured Freeters: {{ event.freeters.reduce((a, b) => a + ", " + b, "") }}</p>
-		<p class="info">Posted at {{ event.dateModified }}</p>
+		</h3>
+		<h4 class="item">Freeters:</h4>
+		<input v-if="editing" class="editArea" :value="draftFreeters" @input="draftFreeters = $event.target.value" />
+		<FreeterComponent v-else v-for="freeter in event.freeters" :key="freeter" :freeter="freeter" />
 		<div v-if="$store.state.username === event.owner" class="actions">
-			<button v-if="editing" @click="submitEdit">✅ Save changes</button>
-			<button v-if="editing" @click="stopEditing">🚫 Discard changes</button>
-			<button v-if="!editing" @click="startEditing">✏️ Edit</button>
-			<button @click="deleteEvent">🗑️ Delete</button>
+			<button v-if="editing" @click="submitEdit" class="editButton">✅ Save changes</button>
+			<button v-if="editing" @click="stopEditing" class="editButton">🚫 Discard changes</button>
+			<button v-if="!editing" @click="startEditing" class="editButton">✏️ Edit</button>
+			<button @click="deleteEvent" class="editButton">🗑️ Delete</button>
 		</div>
 		<section class="alerts">
 			<article v-for="(status, alert, index) in alerts" :key="index" :class="status">
@@ -30,21 +28,25 @@
 			</article>
 		</section>
 		<section v-if="$store.state.freets.length">
+			<p>Freets:</p>
 			<FreetComponent v-for="freet in event.freets" :key="freet.id" :freet="freet" />
 		</section>
 		<article v-else>
 			<h3>No freets for event.</h3>
 		</article>
+		<p class="info">Posted at {{ event.dateModified }}</p>
 	</article>
 </template>
 
 <script>
 import FreetComponent from "@/components/Freet/FreetComponent.vue";
+import FreeterComponent from "@/components/Event/FreeterComponent.vue";
 
 export default {
 	name: "EventComponent",
 	components: {
 		FreetComponent,
+		FreeterComponent,
 	},
 	props: {
 		// Data from the stored freet
@@ -152,9 +154,51 @@ export default {
 </script>
 
 <style scoped>
-.freet {
+.event {
 	border: 1px solid #111;
 	padding: 20px;
 	position: relative;
+	margin-bottom: 20px;
+	border-radius: 15px;
+	background-color: whitesmoke;
+	border-style: none;
+}
+
+.item {
+	margin: 10px 0px;
+}
+
+.desc {
+	margin-top: 20px;
+	margin-bottom: 10px;
+	font-weight: 400;
+}
+
+.topItem {
+	margin-bottom: 5px;
+}
+
+.editArea {
+	border-style: none;
+	border-radius: 10px;
+	background-color: white;
+	width: 400px;
+	padding: 5px;
+}
+
+.editButton {
+	margin-right: 10px;
+	padding: 10px 30px;
+	border: none;
+	border-radius: 10px;
+	background-color: cornflowerblue;
+}
+
+.editButton:hover {
+	cursor: pointer;
+}
+
+.actions {
+	margin-top: 10px;
 }
 </style>

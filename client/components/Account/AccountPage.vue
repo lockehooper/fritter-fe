@@ -9,26 +9,14 @@
 				<div>Following: {{ $store.state.following.length }}</div>
 				<div>Account Classification: {{ $store.state.userClassification }}</div>
 			</header>
-			<header>
-				<h2>Account settings for @{{ $store.state.username }}</h2>
-			</header>
-			<div @click="toggleShowSettings">
-				<slot name="toggleSettings">
-					<button>Show Account Settings</button>
-				</slot>
+			<div class="optionButtons">
+				<div @click="toggleShowSettings" class="buttonSetting">Show Account Settings</div>
+				<div @click="toggleManageAccount" class="buttonSetting">Manage Account</div>
 			</div>
-			<ChangeUsernameForm v-if="showSettings" />
-			<ChangePasswordForm v-if="showSettings" />
 		</section>
 		<section>
-			<header>
-				<h2>Account management</h2>
-			</header>
-			<div @click="toggleManageAccount">
-				<slot name="toggleManage">
-					<button>Toggle Account Management</button>
-				</slot>
-			</div>
+			<ChangeUsernameForm v-if="showSettings" />
+			<ChangePasswordForm v-if="showSettings" />
 			<AccountClassificationForm v-if="showManagement" />
 			<LogoutForm v-if="showManagement" />
 			<DeleteAccountForm v-if="showManagement" />
@@ -61,10 +49,31 @@ export default {
 	methods: {
 		toggleShowSettings() {
 			this.showSettings = !this.showSettings;
+			this.showManagement = false;
 		},
 		toggleManageAccount() {
 			this.showManagement = !this.showManagement;
+			this.showSettings = false;
 		},
 	},
 };
 </script>
+
+<style>
+.optionButtons {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+
+.buttonSetting {
+	padding: 10px 20px;
+	border-radius: 10px;
+	background-color: cornflowerblue;
+	font-size: inherit;
+	font-weight: inherit;
+	margin-right: 10px;
+}
+</style>

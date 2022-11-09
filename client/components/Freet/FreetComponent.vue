@@ -6,7 +6,7 @@
 		<header>
 			<h3 class="author">@{{ freet.author }}</h3>
 		</header>
-		<textarea v-if="editing" class="content" :value="draft" @input="draft = $event.target.value" />
+		<textarea v-if="editing" class="editArea" :value="draft" @input="draft = $event.target.value" />
 		<p v-else class="content">
 			{{ freet.content }}
 		</p>
@@ -15,10 +15,10 @@
 			<i v-if="freet.edited">(edited)</i>
 		</p>
 		<div v-if="$store.state.username === freet.author" class="actions">
-			<button v-if="editing" @click="submitEdit">✅ Save changes</button>
-			<button v-if="editing" @click="stopEditing">🚫 Discard changes</button>
-			<button v-if="!editing" @click="startEditing">✏️ Edit</button>
-			<button @click="deleteFreet">🗑️ Delete</button>
+			<button v-if="editing" @click="submitEdit" class="editButton">✅ Save changes</button>
+			<button v-if="editing" @click="stopEditing" class="editButton">🚫 Discard changes</button>
+			<button v-if="!editing" @click="startEditing" class="editButton">✏️ Edit</button>
+			<button @click="deleteFreet" class="editButton">🗑️ Delete</button>
 		</div>
 		<section class="alerts">
 			<article v-for="(status, alert, index) in alerts" :key="index" :class="status">
@@ -134,8 +134,33 @@ export default {
 
 <style scoped>
 .freet {
-	border: 1px solid #111;
 	padding: 20px;
+	margin-bottom: 20px;
+	border-radius: 15px;
 	position: relative;
+	background-color: lightgray;
+	border-style: none;
+	border-width: 0px;
+}
+
+.editArea {
+	border-style: none;
+	border-radius: 10px;
+	background-color: white;
+	width: 400px;
+	height: 120px;
+	padding: 5px;
+}
+
+.editButton {
+	margin-right: 10px;
+	padding: 10px 30px;
+	border: none;
+	border-radius: 10px;
+	background-color: cornflowerblue;
+}
+
+.editButton:hover {
+	cursor: pointer;
 }
 </style>

@@ -31,8 +31,12 @@ export default {
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
 * {
 	box-sizing: border-box;
+	text-decoration: none;
+	color: black;
 }
 
 body {
@@ -42,10 +46,20 @@ body {
 	padding: 0;
 	margin: 0;
 	font-size: 1.2em;
+	font-family: "Roboto";
+}
+
+textarea {
+	font-family: inherit;
+	font-size: inherit;
 }
 
 main {
 	padding: 0 5em 5em;
+}
+
+.universalText {
+	text-decoration: none;
 }
 
 .alerts {
